@@ -180,7 +180,7 @@ const Footer = () => {
                   group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 
                   text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-600 
                   font-medium px-2 py-1">
-                  ✨ Bhagwatilal Joshi ✨
+                  ✨ Megan.AI ✨
                 </span>
               </div>
             </div>
