@@ -68,7 +68,7 @@ const dummyPosts: Post[] = [
   {
     id: "post-1",
     author: {
-      name: "Jane Smith",
+      name: "Rohit Sharma",
       avatar: "https://i.pravatar.cc/150?img=1",
       title: "Meditation Guide"
     },
@@ -83,7 +83,7 @@ const dummyPosts: Post[] = [
       {
         id: "comment-1",
         author: {
-          name: "Michael Chen",
+          name: "Sara Khan",
           avatar: "https://i.pravatar.cc/150?img=11"
         },
         content: "Absolutely! I can't start my day without at least 15 minutes of meditation. It makes all the difference.",
@@ -94,7 +94,7 @@ const dummyPosts: Post[] = [
       {
         id: "comment-2",
         author: {
-          name: "Sarah Johnson",
+          name: "Joe Goldberg",
           avatar: "https://i.pravatar.cc/150?img=20"
         },
         content: "What meditation technique do you use? I've been trying different approaches.",
@@ -107,7 +107,7 @@ const dummyPosts: Post[] = [
   {
     id: "post-2",
     author: {
-      name: "David Wilson",
+      name: "Golu Gupta",
       avatar: "https://i.pravatar.cc/150?img=3",
       title: "Anxiety Survivor"
     },
@@ -123,7 +123,7 @@ const dummyPosts: Post[] = [
       {
         id: "comment-3",
         author: {
-          name: "Emily Parker",
+          name: "Kalu Singh",
           avatar: "https://i.pravatar.cc/150?img=5"
         },
         content: "So proud of you for using your techniques in the moment! That's a huge victory.",
@@ -136,7 +136,7 @@ const dummyPosts: Post[] = [
   {
     id: "post-3",
     author: {
-      name: "Maria Rodriguez",
+      name: "Anjali Verma",
       avatar: "https://i.pravatar.cc/150?img=4",
       title: "Sleep Coach"
     },
@@ -224,7 +224,7 @@ const allGroups: Group[] = [
 const consultants: Consultant[] = [
   {
     id: 1, 
-    name: "Dr. Sarah Johnson", 
+    name: "Dr. Poonam Chaudhary", 
     specialty: "Anxiety & Depression", 
     avatar: "https://i.pravatar.cc/150?img=20",
     available: true,
@@ -232,19 +232,19 @@ const consultants: Consultant[] = [
   },
   {
     id: 2, 
-    name: "Dr. Michael Chen", 
+    name: "Dr. Rucha Samant", 
     specialty: "Sleep Disorders", 
     avatar: "https://i.pravatar.cc/150?img=11",
     available: true,
-    nationality: "China"
+    nationality: "India"
   },
   {
     id: 3, 
-    name: "Dr. Emily Parker", 
+    name: "Dr. Golu Gupta", 
     specialty: "Stress Management", 
     avatar: "https://i.pravatar.cc/150?img=5",
     available: false,
-    nationality: "UK"
+    nationality: "India"
   },
   {
     id: 4, 
