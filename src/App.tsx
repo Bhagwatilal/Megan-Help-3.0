@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
+import { ActivityProvider } from "./hooks/useActivityTracker";
+
 // Import Firebase configuration
 import "./components/auth/FirebaseConfig";
 
@@ -35,6 +37,7 @@ function App() {
   usePlayAI();
   return (
     <QueryClientProvider client={queryClient}>
+      <ActivityProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -49,6 +52,7 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               
               {/* Protected Routes - Require Authentication */}
+              
               <Route path="/activities" element={
                 <ProtectedRoute>
                   <Activities />
@@ -86,6 +90,7 @@ function App() {
           </BrowserRouter>
         </MemberProvider>
       </TooltipProvider>
+      </ActivityProvider>
     </QueryClientProvider>
   );
 };

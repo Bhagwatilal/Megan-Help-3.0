@@ -8,6 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import CalmZoneSection from "../components/calmzone/CalmZoneSection";
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../components/auth/FirebaseConfig';
+import { saveJournalEntry } from '../services/activityService';
+import { Timestamp } from 'firebase/firestore';
+import { useActivityTracker } from '../hooks/useActivityTracker';
 
 interface ActivityItemProps {
   title: string;
@@ -870,6 +875,8 @@ const CrosswordGame: React.FC = () => {
 
 const JournalingActivity: React.FC = () => {
   const navigate = useNavigate();
+  const [user] = useAuthState(auth);
+  const { startActivity, endActivity } = useActivityTracker();
   const prompts = [
     "What are three things you're grateful for today?",
     "Describe a small win or achievement from today.",
@@ -880,13 +887,28 @@ const JournalingActivity: React.FC = () => {
 
   const [selectedPrompt, setSelectedPrompt] = React.useState(prompts[0]);
   const [journalEntry, setJournalEntry] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  React.useEffect(() => {
+    startActivity('journal', 'Quick Journaling');
+    return () => endActivity();
+  }, []);
 
   const handlePromptChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedPrompt(e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to save your journal entry.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     if (journalEntry.trim() === "") {
       toast({
@@ -896,15 +918,41 @@ const JournalingActivity: React.FC = () => {
       });
       return;
     }
+
+    setIsSubmitting(true);
     
-    toast({
-      title: "Entry ready",
-      description: "Redirecting you to your journal to save this entry."
-    });
-    
-    setTimeout(() => {
-      navigate("/journal");
-    }, 1500);
+    try {
+      await saveJournalEntry({
+        userId: user.uid,
+        prompt: selectedPrompt,
+        content: journalEntry.trim(),
+        createdAt: Timestamp.now()
+      });
+      
+      toast({
+        title: "Entry saved!",
+        description: "Your journal entry has been saved successfully."
+      });
+      
+      // Clear the form
+      setJournalEntry("");
+      setSelectedPrompt(prompts[0]);
+      
+      // Navigate to journal page
+      setTimeout(() => {
+        navigate("/journal");
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Error saving journal entry:', error);
+      toast({
+        title: "Error saving entry",
+        description: "There was an error saving your journal entry. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -944,15 +992,17 @@ const JournalingActivity: React.FC = () => {
                 onChange={(e) => setJournalEntry(e.target.value)}
                 placeholder="Start writing here..."
                 className="w-full p-3 border border-gray-300 rounded-md h-32 bg-white"
+                disabled={isSubmitting}
               />
             </div>
             
             <div className="flex justify-end mt-4">
               <button 
                 type="submit" 
-                className="bg-mentii-500 text-white px-4 py-2 rounded-md hover:bg-mentii-600 transition-colors"
+                disabled={isSubmitting || !user}
+                className="bg-mentii-500 text-white px-4 py-2 rounded-md hover:bg-mentii-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Continue to Journal
+                {isSubmitting ? "Saving..." : "Save to Journal"}
               </button>
             </div>
           </form>
@@ -963,6 +1013,33 @@ const JournalingActivity: React.FC = () => {
 };
 
 const Activities: React.FC = () => {
+  const { startActivity, endActivity } = useActivityTracker();
+
+  const handleTabChange = (value: string) => {
+    endActivity(); // End current activity
+    
+    // Start new activity based on tab
+    switch (value) {
+      case 'drawing':
+        startActivity('drawing', 'Digital Drawing');
+        break;
+      case 'puzzles':
+        startActivity('puzzle', 'Brain Puzzles');
+        break;
+      case 'journaling':
+        startActivity('journal', 'Guided Journaling');
+        break;
+      case 'calmzone':
+        startActivity('book', 'Calm Zone Activities');
+        break;
+    }
+  };
+
+  React.useEffect(() => {
+    startActivity('drawing', 'Digital Drawing'); // Default activity
+    return () => endActivity();
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -974,7 +1051,7 @@ const Activities: React.FC = () => {
             Engage your mind and express yourself with these activities designed for relaxation and mental wellness.
           </p>
           
-          <Tabs defaultValue="drawing" className="w-full">
+          <Tabs defaultValue="drawing" className="w-full" onValueChange={handleTabChange}>
             <TabsList className="grid w-full grid-cols-4 mb-8">
               <TabsTrigger value="drawing" className="flex items-center gap-2">
                 <Brush className="h-4 w-4" />
